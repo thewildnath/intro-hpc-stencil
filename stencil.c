@@ -50,6 +50,22 @@ int main(int argc, char *argv[]) {
 }
 
 void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
+  for (int i = 0; i < nx; ++i) {
+    for (int j = 0; j < ny; ++j) {
+      int curr  = i * ny + j;
+
+      tmp_image[curr] = 0;
+      if (i > 0)    tmp_image[curr] += image[curr - ny];
+      if (i < nx-1) tmp_image[curr] += image[curr + ny];
+      if (j > 0)    tmp_image[curr] += image[curr - 1];
+      if (j < ny-1) tmp_image[curr] += image[curr + 1];
+      
+      tmp_image[curr] *= 0.1;
+
+      tmp_image[curr] += image[curr] * 0.6;
+    }
+  }
+/*
   for (int j = 0; j < ny; ++j) {
     for (int i = 0; i < nx; ++i) {
       tmp_image[j+i*ny] = image[j+i*ny] * 3.0/5.0;
@@ -59,6 +75,7 @@ void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
       if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.5/5.0;
     }
   }
+*/
 }
 
 // Create the input image
