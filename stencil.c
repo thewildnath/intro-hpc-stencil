@@ -49,33 +49,53 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
+/*static inline*/ void applyStencil(
+  const int i, const int j, const int nx, const int ny, const int curr,
+  double *  image, double *  tmp_image) {
+
+  tmp_image[curr] = 0;
+  if (i > 0)    tmp_image[curr] += image[curr - ny];
+  if (i < nx-1) tmp_image[curr] += image[curr + ny];
+  if (j > 0)    tmp_image[curr] += image[curr - 1];
+  if (j < ny-1) tmp_image[curr] += image[curr + 1];
+
+  tmp_image[curr] *= 0.1;
+  tmp_image[curr] += image[curr] * 0.6;
+}
+
 void stencil(const int nx, const int ny, double *  image, double *  tmp_image) {
-  for (int i = 0; i < nx; ++i) {
+  // First and last lines
+  int rows[2] = {0, ny - 1};
+
+  for (int idx = 0; idx < 2; ++idx) {
+    int base = rows[idx] * ny;
+
     for (int j = 0; j < ny; ++j) {
-      int curr  = i * ny + j;
+      int curr  = base + j;
+      applyStencil(rows[idx], j, nx, ny, curr, image, tmp_image);
+    }
+  }
 
-      tmp_image[curr] = 0;
-      if (i > 0)    tmp_image[curr] += image[curr - ny];
-      if (i < nx-1) tmp_image[curr] += image[curr + ny];
-      if (j > 0)    tmp_image[curr] += image[curr - 1];
-      if (j < ny-1) tmp_image[curr] += image[curr + 1];
-      
+  // Rest
+  for (int i = 1; i < nx - 1; ++i) {
+    int base = i * ny;
+
+    // First column
+    applyStencil(i, 0, nx, ny, base, image, tmp_image);
+
+    // Last column
+    applyStencil(i, ny - 1, nx, ny, base + ny - 1, image, tmp_image);
+
+    // Rest
+    for (int j = 1; j < ny - 1; ++j) {
+      int curr  = base + j;
+
+      tmp_image[curr] = image[curr - ny] + image[curr + ny] + image[curr - 1] + image[curr + 1];
+
       tmp_image[curr] *= 0.1;
-
       tmp_image[curr] += image[curr] * 0.6;
     }
   }
-/*
-  for (int j = 0; j < ny; ++j) {
-    for (int i = 0; i < nx; ++i) {
-      tmp_image[j+i*ny] = image[j+i*ny] * 3.0/5.0;
-      if (i > 0)    tmp_image[j+i*ny] += image[j  +(i-1)*ny] * 0.5/5.0;
-      if (i < nx-1) tmp_image[j+i*ny] += image[j  +(i+1)*ny] * 0.5/5.0;
-      if (j > 0)    tmp_image[j+i*ny] += image[j-1+i*ny] * 0.5/5.0;
-      if (j < ny-1) tmp_image[j+i*ny] += image[j+1+i*ny] * 0.5/5.0;
-    }
-  }
-*/
 }
 
 // Create the input image

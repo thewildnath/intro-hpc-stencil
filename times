@@ -1,0 +1,15 @@
+Initial:
+runtime: 8.174150 s
+
+Change i and j:
+runtime: 6.996546 s
+
+Aritmetica:
+-Precalc operatii, fac o data nu de 4 ori
+runtime: 4.509508 s
+runtime: 3.672185 s
+ 
+First/Last separat, scoate if-urile:
+runtime: 3.537417 s
+-4 adunari intr-o linie
+ runtime: 2.216347 s
