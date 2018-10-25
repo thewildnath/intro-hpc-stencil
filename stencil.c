@@ -49,29 +49,17 @@ int main(int argc, char *argv[]) {
 }
 
 void stencil(const int nx, const int ny, float *  image, float *  tmp_image) {
+  int line = ny + 2;
+
   // Rest
   for (int i = 1; i <= nx; ++i) {
-    int base = i * ny;
+    int base = i * line;
+    int curr = 0;
 
-    // First column
-    int curr = base + 1;
-    //image[curr - 1] = 0;
-    tmp_image[curr] = image[curr - ny] + image[curr + ny]/* + image[curr - 1]*/ + image[curr + 1];
-    tmp_image[curr] *= 0.1f;
-    tmp_image[curr] += image[curr] * 0.6f;
-
-    // Last column
-    curr = base + ny;
-    //image[curr + 1] = 0;
-    tmp_image[curr] = image[curr - ny] + image[curr + ny] + image[curr - 1]/* + image[curr + 1]*/;
-    tmp_image[curr] *= 0.1f;
-    tmp_image[curr] += image[curr] * 0.6f;
-
-    // Rest
-    for (int j = 2; j < ny; ++j) {
+    for (int j = 1; j <= ny; ++j) {
       curr = base + j;
 
-      tmp_image[curr] = image[curr - ny] + image[curr + ny] + image[curr - 1] + image[curr + 1];
+      tmp_image[curr] = image[curr - line] + image[curr + line] + image[curr - 1] + image[curr + 1];
 
       tmp_image[curr] *= 0.1f;
       tmp_image[curr] += image[curr] * 0.6f;
@@ -84,8 +72,8 @@ void init_image(const int nx, const int ny, float *  image, float *  tmp_image) 
   // Zero everything
   for (int j = 0; j < ny + 2; ++j) {
     for (int i = 0; i < nx + 2; ++i) {
-      image[j+i*ny] = 0.0;
-      tmp_image[j+i*ny] = 0.0;
+      image[j+i*(ny+2)] = 0.0;
+      tmp_image[j+i*(ny+2)] = 0.0;
     }
   }
 
@@ -95,7 +83,7 @@ void init_image(const int nx, const int ny, float *  image, float *  tmp_image) 
       for (int jj = 1 + j*ny/8; jj <= (j+1)*ny/8; ++jj) {
         for (int ii = 1 + i*nx/8; ii <= (i+1)*nx/8; ++ii) {
           if ((i+j)%2)
-          image[jj+ii*ny] = 100.0;
+          image[jj+ii*(ny+2)] = 100.0;
         }
       }
     }
@@ -121,15 +109,15 @@ void output_image(const char * file_name, const int nx, const int ny, float *ima
   double maximum = 0.0;
   for (int j = 1; j <= ny; ++j) {
     for (int i = 1; i <= nx; ++i) {
-      if (image[j+i*ny] > maximum)
-        maximum = image[j+i*ny];
+      if (image[j+i*(ny+2)] > maximum)
+        maximum = image[j+i*(ny+2)];
     }
   }
 
   // Output image, converting to numbers 0-255
   for (int j = 1; j <= ny; ++j) {
     for (int i = 1; i <= nx; ++i) {
-      fputc((char)(255.0*image[j+i*ny]/maximum), fp);
+      fputc((char)(255.0*image[j+i*(ny+2)]/maximum), fp);
     }
   }
 
