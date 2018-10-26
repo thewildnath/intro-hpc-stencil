@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
   free(image);
 }
 
-void stencil(const int nx, const int ny, float *  image, float *  tmp_image) {
+void stencil(const int nx, const int ny, float* __restrict__ image, float* __restrict__ tmp_image) {
   int line = ny + 2;
 
   // Rest
